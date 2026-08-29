@@ -3,8 +3,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Hov } from '../components/Hov'
 import { ContactActions } from '../components/ContactActions'
 import { c, family, mono } from '../theme'
-import { musicFootnote, weddingDetails, weddingTimelines } from '../data/weddingDetail'
-import { venueLine } from '../data/planner'
+import { useTimeline, useWedding } from '../data/queries'
 import {
   formatCeremonyLine,
   formatDateLine,
@@ -12,7 +11,10 @@ import {
   formatMusicHeading,
   formatSummary,
   formatTeamName,
+  venueLine,
 } from '../format'
+
+const musicFootnote = 'Read only. The music stays between couple and DJ.'
 
 /** A role used as a stand-in owner, as the mock wrote it: "DJ open". */
 const ROLE_LABEL: Record<string, string> = {
@@ -25,17 +27,41 @@ const phone = { font: mono(500, '11px'), color: c.inkSoft } as const
 
 const tabBase = { borderRadius: 999, padding: '6px 15px', fontSize: 11.5, cursor: 'pointer' } as const
 
+function Loading() {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: c.shell,
+        fontFamily: family.sans,
+        color: c.mute,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 13,
+      }}
+    >
+      Loading…
+    </div>
+  )
+}
+
 export function WeddingDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [tab, setTab] = useState<'event' | 'schema'>('event')
   const [copied, setCopied] = useState(false)
 
-  const w = id ? weddingDetails[id] : undefined
-  if (!w) return <Navigate to="/weddings" replace />
+  const { data: w, isPending, error } = useWedding(id)
+  const { data: timelineData } = useTimeline(id)
+
+  // Hooks first, always: an early return above them changes the hook order
+  // between renders, which React treats as a different component.
+  if (isPending) return <Loading />
+  if (error || !w) return <Navigate to="/weddings" replace />
 
   const archived = w.status === 'COMPLETED'
-  const timeline = weddingTimelines[id!] ?? []
+  const timeline = timelineData?.items ?? []
 
   return (
     <div className="rp-shell-col" style={{ background: c.shell, fontFamily: family.sans, color: c.ink }}>

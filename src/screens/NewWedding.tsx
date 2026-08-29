@@ -4,7 +4,8 @@ import { Hov } from '../components/Hov'
 import { c, family, mono } from '../theme'
 import { tabFor } from '../data/directory'
 import type { Vendor } from '../data/directory'
-import { weddingDetails } from '../data/weddingDetail'
+import { useWedding } from '../data/queries'
+import type { Wedding } from '../api/client'
 import { formatDateLong } from '../format'
 
 const fieldLabel = { font: mono(600, '8.5px'), letterSpacing: '.16em', color: c.muteSoft } as const
@@ -136,9 +137,44 @@ function AssignRow({ slot, value, onChange }: { slot: Slot; value: string; onCha
  * opens the same form with the wedding already filled in.
  */
 export function NewWedding() {
-  const navigate = useNavigate()
   const { id } = useParams()
-  const editing = id ? weddingDetails[id] : undefined
+  const { data: editing, isPending } = useWedding(id)
+
+  /*
+    The form below seeds its fields from `editing` with useState initialisers,
+    which run once. If it mounted while the wedding was still loading, every
+    field would keep the empty value it started with and the edit screen would
+    silently discard what it was meant to be editing.
+
+    So the form is a separate component and does not mount until the data is
+    there, keyed on the id so switching weddings remounts it rather than
+    keeping the previous one's answers.
+  */
+  if (id && isPending) return <Loading />
+  return <WeddingForm key={id ?? 'new'} editing={editing} />
+}
+
+function Loading() {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: c.shell,
+        fontFamily: family.sans,
+        color: c.mute,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: 13,
+      }}
+    >
+      Loading…
+    </div>
+  )
+}
+
+function WeddingForm({ editing }: { editing: Wedding | undefined }) {
+  const navigate = useNavigate()
 
   const [couple, setCouple] = useState(editing ? editing.couple_display_name : 'Lisa & Tom')
   const [date, setDate] = useState(editing ? formatDateLong(editing.wedding_date) : '')

@@ -2,14 +2,17 @@ import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Sidebar'
 import { Hov } from '../components/Hov'
 import { c, family, mono } from '../theme'
-import { overviewCounts, overviewSubtitle, past, upcoming, venueLine } from '../data/planner'
-import type { WeddingSummary } from '../data/planner'
+import { useWeddings } from '../data/queries'
+import type { WeddingSummary } from '../api/client'
 import {
   formatCountdown,
   formatDateShort,
   formatOverviewFooter,
   formatPlaylistsLine,
+  venueLine,
 } from '../format'
+
+const overviewSubtitle = 'Five coming up this season, two waiting on vendors.'
 
 type TeamPill = NonNullable<WeddingSummary['roles']>[number]
 
@@ -52,6 +55,16 @@ function TagPill({ tag }: { tag: TeamPill }) {
 
 export function WeddingsOverview() {
   const navigate = useNavigate()
+  const { data, isPending, error } = useWeddings()
+
+  const weddings = data?.weddings ?? []
+  // Split on the server's own count rather than on a date parsed here, so the
+  // boundary is the wedding's timezone and not the browser's.
+  const upcoming = weddings.filter((w) => (w.days_until ?? 0) >= 0)
+  const past = weddings.filter((w) => (w.days_until ?? 0) < 0)
+  const needAVendor = upcoming.filter((w) =>
+    (w.roles ?? []).some((r) => r.state === 'OPEN'),
+  ).length
 
   return (
     <div className="rp-shell" style={{ background: c.shell, fontFamily: family.sans, color: c.ink }}>
@@ -98,6 +111,22 @@ export function WeddingsOverview() {
           className="rp-cap"
           style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: '20px var(--rp-pad-x) 0' }}
         >
+          {isPending && (
+            <div style={{ padding: '24px 0', fontSize: 12.5, color: c.mute }}>
+              Loading your weddings…
+            </div>
+          )}
+          {error && (
+            <div role="alert" style={{ padding: '24px 0', fontSize: 12.5, color: '#8a3c3c' }}>
+              {error instanceof Error ? error.message : 'Could not load your weddings.'}
+            </div>
+          )}
+          {!isPending && !error && weddings.length === 0 && (
+            <div style={{ padding: '24px 0', fontSize: 12.5, color: c.mute }}>
+              No weddings yet. Add the first one.
+            </div>
+          )}
+
           <div style={{ ...label, color: c.muteSoft }}>UPCOMING</div>
           <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 9 }}>
             {upcoming.map((w) => (
@@ -193,7 +222,7 @@ export function WeddingsOverview() {
             color: c.muteFaint,
           }}
         >
-          {formatOverviewFooter(overviewCounts.plannedThisYear, overviewCounts.needAVendor)}
+          {formatOverviewFooter(weddings.length, needAVendor)}
         </footer>
       </div>
     </div>

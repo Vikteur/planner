@@ -174,3 +174,15 @@ export function formatOverviewFooter(plannedThisYear: number, needAVendor: numbe
   const planned = `${plannedThisYear} WEDDING${plannedThisYear === 1 ? '' : 'S'} PLANNED THIS YEAR`
   return `${planned}${DOT}${needAVendor} NEED${needAVendor === 1 ? 'S' : ''} A VENDOR`
 }
+
+/**
+ * A venue as one line: `'De Oude Tuinderij, Aalsmeer'`.
+ *
+ * The API keeps the name and the town apart, because a directory has to search
+ * and sort on them separately. Every screen that shows a venue wants them
+ * joined, so the joining lives here rather than in each screen.
+ */
+export function venueLine(venue: { name: string; place?: string | null } | null | undefined): string {
+  if (!venue) return ''
+  return venue.place ? venue.name + ', ' + venue.place : venue.name
+}

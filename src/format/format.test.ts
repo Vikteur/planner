@@ -13,8 +13,8 @@ import {
   formatSummary,
   formatTeamName,
 } from './index'
-import { overviewCounts, past, upcoming, venueLine } from '../data/planner'
-import { weddingDetails } from '../data/weddingDetail'
+import { overviewCounts, past, upcoming, venueLine } from '../test/mockData.planner'
+import { weddingDetails } from '../test/mockData.weddingDetail'
 
 /**
  * The formatters reproduce the design mock exactly.
