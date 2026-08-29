@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Hov } from '../components/Hov'
 import { c, family, mono } from '../theme'
-import { tabFor } from '../data/directory'
-import type { Vendor } from '../data/directory'
-import { useWedding } from '../data/queries'
+import { tabFor } from '../data/directoryTabs'
+import type { Vendor } from '../api/client'
+import { useVendors, useWedding } from '../data/queries'
 import type { Wedding } from '../api/client'
 import { formatDateLong } from '../format'
 
@@ -78,21 +78,27 @@ const slots: Slot[] = [
 
 /** Venues read better with their town, the way the mock writes them. */
 function optionLabel(vendor: Vendor, slot: Slot) {
-  if (slot.tab !== 'locations') return vendor.name
+  if (slot.tab !== 'locations' || !vendor.place) return vendor.name
   const town = vendor.place[0] + vendor.place.slice(1).toLowerCase()
   return `${vendor.name}, ${town}`
 }
 
 function detailLine(vendor: Vendor) {
-  const summary = vendor.blurb.split('.')[0]
+  const summary = (vendor.blurb ?? '').split('.')[0]
+  // A vendor can be on file with a name and nothing else, which is how a
+  // directory actually starts out.
   const lead = vendor.contacts[0]
+  if (!lead) return summary
   // Solo vendors are their own contact, so do not print the name twice.
-  return lead.name === vendor.name ? `${summary} · ${lead.phone}` : `${summary} · ${lead.name}, ${lead.phone}`
+  const who = lead.name === vendor.name ? lead.phone : `${lead.name}, ${lead.phone}`
+  return [summary, who].filter(Boolean).join(' · ')
 }
 
 function AssignRow({ slot, value, onChange }: { slot: Slot; value: string; onChange: (v: string) => void }) {
   const section = tabFor(slot.tab)
-  const vendor = section.vendors.find((v) => v.id === value)
+  const { data } = useVendors(section?.category)
+  const vendors = data?.vendors ?? []
+  const vendor = vendors.find((v) => v.id === value)
   const open = value === ''
 
   const status = open ? 'pick one' : value === NOT_NEEDED ? 'not needed' : 'assigned'
@@ -111,7 +117,7 @@ function AssignRow({ slot, value, onChange }: { slot: Slot; value: string; onCha
         >
           <option value="">{slot.prompt}</option>
           <option value={NOT_NEEDED}>Not needed</option>
-          {section.vendors.map((v) => (
+          {vendors.map((v) => (
             <option key={v.id} value={v.id}>
               {optionLabel(v, slot)}
             </option>

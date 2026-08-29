@@ -4,10 +4,11 @@ import { Sidebar } from '../components/Sidebar'
 import { Hov } from '../components/Hov'
 import { ContactActions } from '../components/ContactActions'
 import { c, family, mono } from '../theme'
-import { directory, directoryFooter } from '../data/directory'
-import type { Contact, Vendor } from '../data/directory'
+import { directoryFooter, tabFor } from '../data/directoryTabs'
+import { useVendors } from '../data/queries'
+import type { Vendor, VendorContact } from '../api/client'
 
-function ContactRow({ contact, first }: { contact: Contact; first: boolean }) {
+function ContactRow({ contact, first }: { contact: VendorContact; first: boolean }) {
   return (
     <div
       className="rp-contact"
@@ -24,7 +25,11 @@ function ContactRow({ contact, first }: { contact: Contact; first: boolean }) {
         </div>
       </div>
       <span style={{ font: mono(500, '11.5px'), color: c.inkSoft }}>{contact.phone}</span>
-      <ContactActions name={contact.name} email={contact.email} phone={contact.phone} />
+      <ContactActions
+        name={contact.name}
+        email={contact.email ?? ''}
+        phone={contact.phone ?? ''}
+      />
     </div>
   )
 }
@@ -46,7 +51,7 @@ function VendorCard({ vendor }: { vendor: Vendor }) {
       </div>
       <div style={{ marginTop: 3, fontSize: 11.5, color: c.mute }}>{vendor.blurb}</div>
       {vendor.contacts.map((contact, i) => (
-        <ContactRow key={contact.name} contact={contact} first={i === 0} />
+        <ContactRow key={contact.id} contact={contact} first={i === 0} />
       ))}
     </div>
   )
@@ -55,19 +60,34 @@ function VendorCard({ vendor }: { vendor: Vendor }) {
 export function VendorDirectory() {
   const { tab } = useParams()
   const [query, setQuery] = useState('')
-  const section = directory.find((d) => d.key === tab)
+  const section = tabFor(tab)
+  const { data, isPending, error } = useVendors(section?.category)
 
+  const all = data?.vendors ?? []
+
+  /*
+    Filtered here rather than by asking the server on every keystroke.
+
+    A planner's directory is tens of vendors, not thousands, and it is already
+    in memory; a request per keypress would add latency to something that is
+    currently instant, and would need debouncing and out-of-order handling to
+    not be worse. The endpoint takes a `q` for when that stops being true.
+  */
   const vendors = useMemo(() => {
-    if (!section) return []
     const q = query.trim().toLowerCase()
-    if (!q) return section.vendors
-    return section.vendors.filter((v) =>
-      [v.name, v.place, v.blurb, ...v.contacts.flatMap((p) => [p.name, p.role, p.phone, p.email])]
+    if (!q) return all
+    return all.filter((v) =>
+      [
+        v.name,
+        v.place ?? '',
+        v.blurb ?? '',
+        ...v.contacts.flatMap((p) => [p.name, p.role ?? '', p.phone ?? '', p.email ?? '']),
+      ]
         .join(' ')
         .toLowerCase()
         .includes(q),
     )
-  }, [section, query])
+  }, [all, query])
 
   if (!section) return <Navigate to="/directory/catering" replace />
 
@@ -88,7 +108,9 @@ export function VendorDirectory() {
             >
               {section.title}
             </div>
-            <div style={{ marginTop: 6, fontSize: 13, color: c.inkSoft }}>{section.subtitle}</div>
+            <div style={{ marginTop: 6, fontSize: 13, color: c.inkSoft }}>
+              {section.subtitle(all.length)}
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '1 1 auto', justifyContent: 'flex-end' }}>
             <div
@@ -139,6 +161,20 @@ export function VendorDirectory() {
           className="rp-cap"
           style={{ flex: 1, minHeight: 0, overflow: 'auto', padding: '20px var(--rp-pad-x) 0' }}
         >
+          {isPending && (
+            <div style={{ padding: '24px 0', fontSize: 12.5, color: c.mute }}>Loading…</div>
+          )}
+          {error && (
+            <div role="alert" style={{ padding: '24px 0', fontSize: 12.5, color: '#8a3c3c' }}>
+              {error instanceof Error ? error.message : 'Could not load the directory.'}
+            </div>
+          )}
+          {!isPending && !error && vendors.length === 0 && (
+            <div style={{ padding: '24px 0', fontSize: 12.5, color: c.mute }}>
+              {query.trim() ? 'Nothing matches that search.' : section.add.replace('+ ', 'No one here yet. ')}
+            </div>
+          )}
+
           <div className="rp-cards">
             {vendors.map((v) => (
               <VendorCard key={v.id} vendor={v} />
