@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mock vs React diff</title>
+<style>
+  body{margin:0;background:#333;font:12px ui-monospace,monospace;color:#eee}
+  .wrap{display:flex;gap:8px;padding:8px;width:2400px}
+  iframe{border:0;flex:0 0 1180px;width:1180px;height:740px;background:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <iframe id="ref"></iframe>
+  <iframe id="app"></iframe>
+</div>
+<script>
+const SCREENS = {
+  s1a: '/weddings',
+  s1b: '/catering',
+  s1c: '/weddings/new',
+  s1d: '/weddings/emma-julian',
+}
+
+function load(which, src) {
+  return new Promise((resolve) => {
+    const f = document.getElementById(which)
+    f.onload = () => setTimeout(resolve, 400)
+    f.src = src
+  })
+}
+
+window.loadPair = async function (screen) {
+  await Promise.all([
+    load('ref', '/reference/mock.html?only=' + screen),
+    load('app', SCREENS[screen]),
+  ])
+  return 'loaded ' + screen
+}
+
+function round(n) { return Math.round(n * 2) / 2 }  // half-pixel tolerance
+
+// Text grouped per owning element, so it does not matter how React splits
+// a line into multiple text nodes.
+function texts(doc) {
+  const out = []
+  for (const el of doc.body.querySelectorAll('*')) {
+    if (el.tagName === 'INPUT') {
+      const b = el.getBoundingClientRect()
+      const cs = doc.defaultView.getComputedStyle(el)
+      out.push({
+        t: '[input] ' + (el.value || el.placeholder),
+        x: round(b.left), y: round(b.top), w: round(b.width), h: round(b.height),
+        color: cs.color,
+        font: cs.fontFamily.split(',')[0].replace(/["']/g, '') + ' ' + cs.fontSize + '/' + cs.fontWeight + '/' + cs.fontStyle,
+        ls: cs.letterSpacing, lh: cs.lineHeight,
+      })
+      continue
+    }
+    const kids = [...el.childNodes].filter((n) => n.nodeType === 3 && n.nodeValue.trim())
+    if (!kids.length) continue
+    let t = ''
+    let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity
+    for (const n of kids) {
+      t += n.nodeValue
+      const r = doc.createRange()
+      r.selectNodeContents(n)
+      const b = r.getBoundingClientRect()
+      if (!b.width && !b.height) continue
+      left = Math.min(left, b.left); top = Math.min(top, b.top)
+      right = Math.max(right, b.right); bottom = Math.max(bottom, b.bottom)
+    }
+    if (left === Infinity) continue
+    const cs = doc.defaultView.getComputedStyle(el)
+    out.push({
+      t: t.replace(/\s+/g, ' ').trim(),
+      x: round(left), y: round(top), w: round(right - left), h: round(bottom - top),
+      color: cs.color,
+      font: cs.fontFamily.split(',')[0].replace(/["']/g, '') + ' ' + cs.fontSize + '/' + cs.fontWeight + '/' + cs.fontStyle,
+      ls: cs.letterSpacing,
+      lh: cs.lineHeight,
+    })
+  }
+  return out
+}
+
+// Every painted box: anything with a background, a border, or a shadow.
+function boxes(doc) {
+  const out = []
+  for (const el of doc.body.querySelectorAll('*')) {
+    const cs = doc.defaultView.getComputedStyle(el)
+    const hasBg = cs.backgroundColor !== 'rgba(0, 0, 0, 0)'
+    const hasBorder = ['Top', 'Right', 'Bottom', 'Left'].some(
+      (s) => parseFloat(cs['border' + s + 'Width']) > 0 && cs['border' + s + 'Style'] !== 'none',
+    )
+    const hasShadow = cs.boxShadow !== 'none'
+    if (!hasBg && !hasBorder && !hasShadow) continue
+    const b = el.getBoundingClientRect()
+    if (!b.width || !b.height) continue
+    out.push({
+      x: round(b.left), y: round(b.top), w: round(b.width), h: round(b.height),
+      bg: cs.backgroundColor,
+      bt: cs.borderTopWidth + ' ' + cs.borderTopStyle + ' ' + cs.borderTopColor,
+      br: cs.borderRightWidth + ' ' + cs.borderRightStyle + ' ' + cs.borderRightColor,
+      bb: cs.borderBottomWidth + ' ' + cs.borderBottomStyle + ' ' + cs.borderBottomColor,
+      bl: cs.borderLeftWidth + ' ' + cs.borderLeftStyle + ' ' + cs.borderLeftColor,
+      rad: cs.borderRadius,
+      shadow: cs.boxShadow,
+      op: cs.opacity,
+    })
+  }
+  return out
+}
+
+function key(o) { return JSON.stringify(o) }
+
+function sortBoxes(a) {
+  return a.slice().sort((p, q) => p.y - q.y || p.x - q.x || p.w - q.w || p.h - q.h)
+}
+function sortTexts(a) {
+  return a.slice().sort((p, q) => p.y - q.y || p.x - q.x || (p.t < q.t ? -1 : 1))
+}
+
+function diffLists(refList, appList, label) {
+  const refK = refList.map(key)
+  const appK = appList.map(key)
+  const appLeft = new Map()
+  appK.forEach((k, i) => appLeft.set(k, (appLeft.get(k) || 0) + 1))
+  const missing = []
+  for (let i = 0; i < refK.length; i++) {
+    const k = refK[i]
+    if (appLeft.get(k)) appLeft.set(k, appLeft.get(k) - 1)
+    else missing.push(refList[i])
+  }
+  const extra = []
+  const refLeft = new Map()
+  refK.forEach((k) => refLeft.set(k, (refLeft.get(k) || 0) + 1))
+  for (let i = 0; i < appK.length; i++) {
+    const k = appK[i]
+    if (refLeft.get(k)) refLeft.set(k, refLeft.get(k) - 1)
+    else extra.push(appList[i])
+  }
+  return { label, refCount: refList.length, appCount: appList.length, missing, extra }
+}
+
+window.runDiff = function () {
+  const refDoc = document.getElementById('ref').contentDocument
+  const appDoc = document.getElementById('app').contentDocument
+  return {
+    text: diffLists(sortTexts(texts(refDoc)), sortTexts(texts(appDoc)), 'text'),
+    box: diffLists(sortBoxes(boxes(refDoc)), sortBoxes(boxes(appDoc)), 'box'),
+  }
+}
+</script>
+</body>
+</html>

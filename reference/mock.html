@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Planner UI Mock, reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&amp;family=JetBrains+Mono:wght@400;500&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&amp;display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#e9e7e2;font-family:system-ui,sans-serif}
+  .frame{width:1180px;height:740px;overflow:hidden;margin:0 0 24px}
+</style>
+<script>
+// Show a single frame when called as mock.html?only=s1a
+(function(){
+  var only=new URLSearchParams(location.search).get('only');
+  if(!only) return;
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.frame').forEach(function(f){
+      if(f.id!==only) f.remove();
+    });
+    document.body.style.margin='0';
+  });
+})();
+</script>
+</head>
+<body>
+
+<div class="frame" id="s1a">
+<div data-screen-label="1a Planner events overview" style="height:740px;background:#faf8f3;font-family:'DM Sans',Helvetica,sans-serif;color:#2b2620;display:flex">
+<aside style="flex:none;width:196px;border-right:1px solid #eee6d6;display:flex;flex-direction:column;padding:24px 0">
+<div style="padding:0 22px">
+<div style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:.28em;color:#c4bba7">REKORD MATCH</div>
+<div style="margin-top:3px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:17px;color:#6f6759">for planners</div>
+</div>
+<nav style="margin-top:26px;display:flex;flex-direction:column;gap:2px;padding:0 12px">
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;background:#2b2620;color:#faf8f3;padding:9px 12px;font-size:12.5px;font-weight:600;cursor:pointer">Weddings</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">Catering</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">Photographers</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">Locations</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">DJs</span>
+</nav>
+<div style="margin-top:auto;padding:0 22px">
+<div style="font-size:12.5px;font-weight:700">Iris van Dalen</div>
+<div style="margin-top:2px;font:400 9.5px 'JetBrains Mono',monospace;color:#b3a78f">WEDDING PLANNER</div>
+</div>
+</aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+<header style="flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:26px 34px 0">
+<div>
+<div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:600;line-height:1.12">Your weddings.</div>
+<div style="margin-top:6px;font-size:13px;color:#6f6759">Five coming up this season, two waiting on vendors.</div>
+</div>
+<button style="border:0;border-radius:999px;background:#2b2620;color:#faf8f3;font-family:inherit;font-size:12.5px;font-weight:600;padding:11px 22px;cursor:pointer">+ New wedding</button>
+</header>
+<main style="flex:1;min-height:0;overflow:hidden;padding:20px 34px 0">
+<div style="font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#b3a78f">UPCOMING</div>
+<div style="margin-top:10px;display:flex;flex-direction:column;gap:9px">
+<div style="display:grid;grid-template-columns:104px 1fr 210px 150px 90px;align-items:center;gap:16px;background:#fff;border:1px solid #e7dfd0;border-radius:12px;padding:14px 18px;cursor:pointer">
+<div><div style="font:500 12px 'JetBrains Mono',monospace;color:#8a6b3c">14 JUN 2027</div><div style="margin-top:2px;font:400 9.5px 'JetBrains Mono',monospace;color:#c4bba7">IN 42 DAYS</div></div>
+<div><div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;font-weight:600">Emma &amp; Julian</div><div style="margin-top:2px;font-size:11.5px;color:#a89d8a">De Oude Tuinderij, Aalsmeer · 120 guests</div></div>
+<div style="display:flex;gap:5px;flex-wrap:wrap">
+<span style="border-radius:999px;background:rgba(176,141,87,.13);color:#8a6b3c;padding:3px 10px;font-size:10.5px;font-weight:600">DJ Daan ✓</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.13);color:#8a6b3c;padding:3px 10px;font-size:10.5px;font-weight:600">Catering ✓</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.13);color:#8a6b3c;padding:3px 10px;font-size:10.5px;font-weight:600">Photo ✓</span>
+</div>
+<div style="font-size:11.5px;color:#6f6759">Playlists: 6 of 6 lists in</div>
+<span style="text-align:right;font-size:11.5px;color:#8a6b3c">open →</span>
+</div>
+<div style="display:grid;grid-template-columns:104px 1fr 210px 150px 90px;align-items:center;gap:16px;background:#fff;border:1px solid #e7dfd0;border-radius:12px;padding:14px 18px;cursor:pointer">
+<div><div style="font:500 12px 'JetBrains Mono',monospace;color:#8a6b3c">03 JUL 2027</div><div style="margin-top:2px;font:400 9.5px 'JetBrains Mono',monospace;color:#c4bba7">IN 61 DAYS</div></div>
+<div><div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;font-weight:600">Sofie &amp; Mark</div><div style="margin-top:2px;font-size:11.5px;color:#a89d8a">Landgoed Ter Hooge, Middelburg · 85 guests</div></div>
+<div style="display:flex;gap:5px;flex-wrap:wrap">
+<span style="border-radius:999px;background:rgba(176,141,87,.13);color:#8a6b3c;padding:3px 10px;font-size:10.5px;font-weight:600">DJ Yara ✓</span>
+<span style="border-radius:999px;border:1px dashed #d8c6a4;color:#b3a78f;padding:3px 10px;font-size:10.5px;font-weight:600">Catering?</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.13);color:#8a6b3c;padding:3px 10px;font-size:10.5px;font-weight:600">Photo ✓</span>
+</div>
+<div style="font-size:11.5px;color:#6f6759">Playlists: 3 of 6 lists in</div>
+<span style="text-align:right;font-size:11.5px;color:#8a6b3c">open →</span>
+</div>
+<div style="display:grid;grid-template-columns:104px 1fr 210px 150px 90px;align-items:center;gap:16px;background:#fff;border:1px solid #e7dfd0;border-radius:12px;padding:14px 18px;cursor:pointer">
+<div><div style="font:500 12px 'JetBrains Mono',monospace;color:#8a6b3c">21 AUG 2027</div><div style="margin-top:2px;font:400 9.5px 'JetBrains Mono',monospace;color:#c4bba7">IN 110 DAYS</div></div>
+<div><div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;font-weight:600">Lisa &amp; Tom</div><div style="margin-top:2px;font-size:11.5px;color:#a89d8a">Strandpaviljoen Zuid, Bloemendaal · 150 guests</div></div>
+<div style="display:flex;gap:5px;flex-wrap:wrap">
+<span style="border-radius:999px;border:1px dashed #d8c6a4;color:#b3a78f;padding:3px 10px;font-size:10.5px;font-weight:600">DJ?</span>
+<span style="border-radius:999px;border:1px dashed #d8c6a4;color:#b3a78f;padding:3px 10px;font-size:10.5px;font-weight:600">Catering?</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.13);color:#8a6b3c;padding:3px 10px;font-size:10.5px;font-weight:600">Photo ✓</span>
+</div>
+<div style="font-size:11.5px;color:#6f6759">Playlists: not started</div>
+<span style="text-align:right;font-size:11.5px;color:#8a6b3c">open →</span>
+</div>
+</div>
+<div style="margin-top:20px;font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#c4bba7">PAST</div>
+<div style="margin-top:10px;display:flex;flex-direction:column;gap:7px">
+<div style="display:grid;grid-template-columns:104px 1fr 150px 90px;align-items:center;gap:16px;border:1px solid #f0e9da;border-radius:12px;padding:11px 18px;cursor:pointer;opacity:.75">
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#b3a78f">02 MAY 2026</span>
+<div><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;font-weight:600">Nora &amp; Wessel</span><span style="margin-left:10px;font-size:11px;color:#a89d8a">Kasteel Wijenburg, Echteld</span></div>
+<span style="font-size:11px;color:#a89d8a">All playlists archived</span>
+<span style="text-align:right;font-size:11.5px;color:#b3a78f">open →</span>
+</div>
+<div style="display:grid;grid-template-columns:104px 1fr 150px 90px;align-items:center;gap:16px;border:1px solid #f0e9da;border-radius:12px;padding:11px 18px;cursor:pointer;opacity:.75">
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#b3a78f">18 APR 2026</span>
+<div><span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16px;font-weight:600">Femke &amp; Ruben</span><span style="margin-left:10px;font-size:11px;color:#a89d8a">De Oude Tuinderij, Aalsmeer</span></div>
+<span style="font-size:11px;color:#a89d8a">All playlists archived</span>
+<span style="text-align:right;font-size:11.5px;color:#b3a78f">open →</span>
+</div>
+</div>
+</main>
+<footer style="flex:none;padding:14px 34px 18px;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#c4bba7">12 WEDDINGS PLANNED THIS YEAR · 2 NEED A VENDOR</footer>
+</div>
+</div>
+</div>
+
+<div class="frame" id="s1b">
+<div data-screen-label="1b Planner vendor directory" style="height:740px;background:#faf8f3;font-family:'DM Sans',Helvetica,sans-serif;color:#2b2620;display:flex">
+<aside style="flex:none;width:196px;border-right:1px solid #eee6d6;display:flex;flex-direction:column;padding:24px 0">
+<div style="padding:0 22px">
+<div style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:.28em;color:#c4bba7">REKORD MATCH</div>
+<div style="margin-top:3px;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:17px;color:#6f6759">for planners</div>
+</div>
+<nav style="margin-top:26px;display:flex;flex-direction:column;gap:2px;padding:0 12px">
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">Weddings</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;background:#2b2620;color:#faf8f3;padding:9px 12px;font-size:12.5px;font-weight:600;cursor:pointer">Catering</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">Photographers</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">Locations</span>
+<span style="display:flex;align-items:center;gap:10px;border-radius:8px;color:#6f6759;padding:9px 12px;font-size:12.5px;cursor:pointer">DJs</span>
+</nav>
+<div style="margin-top:auto;padding:0 22px">
+<div style="font-size:12.5px;font-weight:700">Iris van Dalen</div>
+<div style="margin-top:2px;font:400 9.5px 'JetBrains Mono',monospace;color:#b3a78f">WEDDING PLANNER</div>
+</div>
+</aside>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+<header style="flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:26px 34px 0">
+<div>
+<div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:600;line-height:1.12">Catering.</div>
+<div style="margin-top:6px;font-size:13px;color:#6f6759">Eight caterers you work with, and who to call at each.</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px">
+<div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e7dfd0;border-radius:999px;padding:9px 15px;width:200px"><span style="color:#b08d57;font-size:13px;line-height:1">⌕</span><span style="font-size:12px;color:#b3a78f">Search a name or dish…</span></div>
+<button style="border:0;border-radius:999px;background:#2b2620;color:#faf8f3;font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 20px;cursor:pointer">+ Add caterer</button>
+</div>
+</header>
+<main style="flex:1;min-height:0;overflow:hidden;padding:20px 34px 0">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start">
+<div style="position:relative;background:#fff;border:1px solid #e7dfd0;border-radius:13px;padding:16px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:15px;font-weight:700">Smaakmakers Catering</span><span style="font:400 9.5px 'JetBrains Mono',monospace;color:#c4bba7">AMSTERDAM</span></div>
+<div style="margin-top:3px;font-size:11.5px;color:#a89d8a">Shared dining, long tables. Vegetarian first. Booked 6 times.</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0e9da;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Jasper Vos</div><div style="margin-top:1px;font:400 9px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#b3a78f">OWNER · QUOTES AND MENUS</div></div>
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#6f6759">+31 6 21 44 87 03</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer">CALL</span>
+</div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Petra Willems</div><div style="margin-top:1px;font:400 9px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#b3a78f">DAY LEAD · ON SITE</div></div>
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#6f6759">+31 6 58 09 12 76</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer">CALL</span>
+</div>
+</div>
+<div style="position:relative;background:#fff;border:1px solid #e7dfd0;border-radius:13px;padding:16px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:15px;font-weight:700">Bureau Banket</span><span style="font:400 9.5px 'JetBrains Mono',monospace;color:#c4bba7">UTRECHT</span></div>
+<div style="margin-top:3px;font-size:11.5px;color:#a89d8a">Classic seated dinners, strong wine list. Booked 4 times.</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0e9da;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Annelies de Jong</div><div style="margin-top:1px;font:400 9px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#b3a78f">SALES · FIRST CONTACT</div></div>
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#6f6759">+31 30 555 02 91</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer">CALL</span>
+</div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Koen Bakema</div><div style="margin-top:1px;font:400 9px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#b3a78f">HEAD CHEF · ALLERGIES</div></div>
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#6f6759">+31 6 40 33 18 25</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer">CALL</span>
+</div>
+</div>
+<div style="position:relative;background:#fff;border:1px solid #e7dfd0;border-radius:13px;padding:16px 18px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px"><span style="font-size:15px;font-weight:700">Fest &amp; Food</span><span style="font:400 9.5px 'JetBrains Mono',monospace;color:#c4bba7">ROTTERDAM</span></div>
+<div style="margin-top:3px;font-size:11.5px;color:#a89d8a">Food trucks and street food, great for outdoor venues. Booked twice.</div>
+<div style="margin-top:12px;padding-top:12px;border-top:1px solid #f0e9da;display:flex;align-items:center;gap:10px">
+<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">Milan Petrović</div><div style="margin-top:1px;font:400 9px 'JetBrains Mono',monospace;letter-spacing:.08em;color:#b3a78f">OWNER · EVERYTHING</div></div>
+<span style="font:500 11.5px 'JetBrains Mono',monospace;color:#6f6759">+31 6 77 20 94 41</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer">CALL</span>
+</div>
+</div>
+<div style="box-sizing:border-box;border:1px dashed #ddd2bc;border-radius:13px;padding:16px 18px;font-size:12px;color:#a89d8a;line-height:1.55;display:flex;flex-direction:column;justify-content:center">Works the same for photographers, locations and DJs. <span style="margin-top:4px;color:#8a6b3c;cursor:pointer">Switch tabs on the left.</span></div>
+</div>
+</main>
+<footer style="flex:none;padding:14px 34px 18px;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#c4bba7">EVERY CONTACT HERE CAN BE ASSIGNED TO A WEDDING IN ONE TAP</footer>
+</div>
+</div>
+</div>
+
+<div class="frame" id="s1c">
+<div data-screen-label="1c Planner create wedding" style="height:740px;background:#faf8f3;font-family:'DM Sans',Helvetica,sans-serif;color:#2b2620;display:flex;flex-direction:column">
+<header style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:22px 40px 0">
+<span style="font-size:12px;color:#a89d8a;cursor:pointer">← Back to your weddings</span>
+<span style="font:400 10px 'JetBrains Mono',monospace;color:#c4bba7">draft saved ✓</span>
+</header>
+<main style="flex:1;min-height:0;display:flex;justify-content:center;overflow:hidden;padding:18px 40px 0">
+<div style="width:760px">
+<div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:33px;font-weight:600;line-height:1.15">A new wedding.</div>
+<div style="margin-top:7px;font-size:13px;color:#6f6759">The couple, the date, the place. Assign vendors now or leave them open.</div>
+<div style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 14px"><div style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#b3a78f">THE COUPLE</div><div style="margin-top:4px;font-size:14px;font-weight:600">Lisa &amp; Tom</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="background:#fff;border:1.5px solid #b08d57;border-radius:11px;padding:11px 14px;box-shadow:0 0 0 4px rgba(176,141,87,.1)"><div style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#b3a78f">DATE</div><div style="margin-top:4px;font-size:14px;color:#c4bba7">DD / MM / YYYY</div></div>
+<div style="background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 14px"><div style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.16em;color:#b3a78f">GUESTS</div><div style="margin-top:4px;font-size:14px;font-weight:600">150</div></div>
+</div>
+</div>
+<div style="margin-top:20px;font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#b3a78f">ASSIGN FROM YOUR DIRECTORY</div>
+<div style="margin-top:10px;display:flex;flex-direction:column;gap:9px">
+<div style="display:grid;grid-template-columns:120px 1fr 130px;align-items:center;gap:14px;background:#fff;border:1px solid #e7dfd0;border-radius:12px;padding:12px 16px">
+<span style="font:600 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">LOCATION</span>
+<div><div style="font-size:13.5px;font-weight:700">Strandpaviljoen Zuid, Bloemendaal</div><div style="margin-top:1px;font-size:11px;color:#a89d8a">Beach venue · fits 180 · Karin Smit, +31 23 555 07 22</div></div>
+<span style="text-align:right;font-size:11.5px;color:#8a6b3c;cursor:pointer">change</span>
+</div>
+<div style="display:grid;grid-template-columns:120px 1fr 130px;align-items:center;gap:14px;background:#fff;border:1px solid #e7dfd0;border-radius:12px;padding:12px 16px">
+<span style="font:600 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">PHOTOGRAPHER</span>
+<div><div style="font-size:13.5px;font-weight:700">Merel Jansen</div><div style="margin-top:1px;font-size:11px;color:#a89d8a">Documentary style · +31 6 22 70 45 18</div></div>
+<span style="text-align:right;font-size:11.5px;color:#8a6b3c;cursor:pointer">change</span>
+</div>
+<div style="display:grid;grid-template-columns:120px 1fr 130px;align-items:center;gap:14px;background:#fffdf8;border:1.5px dashed #d8c6a4;border-radius:12px;padding:12px 16px">
+<span style="font:600 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">DJ</span>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<span style="border-radius:999px;border:1px solid #e7dfd0;background:#fff;padding:5px 13px;font-size:11.5px;color:#6f6759;cursor:pointer">Daan Vermeer · free 21 Aug</span>
+<span style="border-radius:999px;border:1px solid #e7dfd0;background:#fff;padding:5px 13px;font-size:11.5px;color:#6f6759;cursor:pointer">Yara Postma · free 21 Aug</span>
+<span style="border-radius:999px;border:1px solid #f0e9da;background:#faf8f3;padding:5px 13px;font-size:11.5px;color:#c4bba7">Ravi Sandhu · booked</span>
+</div>
+<span style="text-align:right;font-size:11.5px;color:#b3a78f">pick one</span>
+</div>
+<div style="display:grid;grid-template-columns:120px 1fr 130px;align-items:center;gap:14px;background:#fffdf8;border:1.5px dashed #d8c6a4;border-radius:12px;padding:12px 16px">
+<span style="font:600 9px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">CATERING</span>
+<span style="font-size:12.5px;color:#b3a78f">Choose from your eight caterers, or leave open for now…</span>
+<span style="text-align:right;font-size:11.5px;color:#b3a78f">pick one</span>
+</div>
+</div>
+<div style="margin-top:18px;display:flex;align-items:center;gap:14px">
+<button style="border:0;border-radius:999px;background:#2b2620;color:#faf8f3;font-family:inherit;font-size:13px;font-weight:600;padding:12px 26px;cursor:pointer">Create wedding</button>
+<span style="font-size:11.5px;color:#a89d8a">The couple gets their own private page the moment you create it.</span>
+</div>
+</div>
+</main>
+<footer style="flex:none;padding:14px 40px 18px"></footer>
+</div>
+</div>
+
+<div class="frame" id="s1d">
+<div data-screen-label="1d Planner wedding detail" style="height:740px;background:#faf8f3;font-family:'DM Sans',Helvetica,sans-serif;color:#2b2620;display:flex;flex-direction:column">
+<header style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:20px 40px 0">
+<span style="font-size:12px;color:#a89d8a;cursor:pointer">← Your weddings</span>
+<span style="display:flex;align-items:center;gap:14px">
+<span style="font:400 10px 'JetBrains Mono',monospace;color:#c4bba7">14 JUNE 2027 · IN 42 DAYS</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:4px 12px;font-size:10.5px;font-weight:700;letter-spacing:.06em;cursor:pointer">SHARE WITH VENUE</span>
+</span>
+</header>
+<div style="flex:none;padding:14px 40px 0;display:flex;align-items:flex-end;justify-content:space-between">
+<div>
+<div style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:33px;font-weight:600;line-height:1.1">Emma &amp; Julian</div>
+<div style="margin-top:5px;font-size:12.5px;color:#6f6759">De Oude Tuinderij, Aalsmeer · 120 guests · ceremony 13:30, opening dance 20:30</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px">
+<span style="border-radius:999px;background:#2b2620;color:#faf8f3;padding:6px 15px;font-size:11.5px;font-weight:600;cursor:pointer">The event</span>
+<span style="border-radius:999px;border:1px solid #e7dfd0;background:#fff;color:#6f6759;padding:6px 15px;font-size:11.5px;cursor:pointer">Schema of the day</span>
+</div>
+</div>
+<main style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 400px;gap:22px;padding:16px 40px 0;overflow:hidden">
+<div style="min-width:0;display:flex;flex-direction:column;gap:10px">
+<div style="font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#b3a78f">THE TEAM ON THE DAY</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:grid;grid-template-columns:110px 1fr 140px;align-items:center;gap:12px;background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px">
+<span style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">VENUE</span>
+<div><div style="font-size:13px;font-weight:700">Sanne de Groot</div><div style="font-size:10.5px;color:#a89d8a">De Oude Tuinderij · rain plan: glass house</div></div>
+<span style="text-align:right;font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 20 555 0184</span>
+</div>
+<div style="display:grid;grid-template-columns:110px 1fr 140px;align-items:center;gap:12px;background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px">
+<span style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">DJ</span>
+<div><div style="font-size:13px;font-weight:700">Daan Vermeer</div><div style="font-size:10.5px;color:#a89d8a">On the decks 20:30 · load-in side door 19:45</div></div>
+<span style="text-align:right;font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 6 14 82 30 77</span>
+</div>
+<div style="display:grid;grid-template-columns:110px 1fr 140px;align-items:center;gap:12px;background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px">
+<span style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">CATERING</span>
+<div><div style="font-size:13px;font-weight:700">Petra Willems · Smaakmakers</div><div style="font-size:10.5px;color:#a89d8a">Dinner 17:30 · 4 vegan, 2 gluten free</div></div>
+<span style="text-align:right;font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 6 58 09 12 76</span>
+</div>
+<div style="display:grid;grid-template-columns:110px 1fr 140px;align-items:center;gap:12px;background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px">
+<span style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">PHOTO</span>
+<div><div style="font-size:13px;font-weight:700">Merel Jansen</div><div style="font-size:10.5px;color:#a89d8a">Arrives 08:00 at the bride's parents</div></div>
+<span style="text-align:right;font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 6 22 70 45 18</span>
+</div>
+<div style="display:grid;grid-template-columns:110px 1fr 140px;align-items:center;gap:12px;background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px">
+<span style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">MC</span>
+<div><div style="font-size:13px;font-weight:700">Tim Bakker</div><div style="font-size:10.5px;color:#a89d8a">Friend of the groom · runs the speeches</div></div>
+<span style="text-align:right;font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 6 40 71 29 55</span>
+</div>
+</div>
+<div style="margin-top:6px;font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#b3a78f">THE COUPLE</div>
+<div style="display:flex;align-items:center;gap:10px;background:#fffdf8;border:1px solid #eadfca;border-radius:11px;padding:10px 15px">
+<span style="font:600 8.5px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#b3a78f">THEIR PAGE</span>
+<span style="flex:1;min-width:0;font:500 11.5px 'JetBrains Mono',monospace;color:#8a6b3c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">rekordmatch.app/emma-julian-14june</span>
+<span style="border-radius:999px;background:rgba(176,141,87,.14);color:#8a6b3c;padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer">COPY LINK</span>
+<span style="font-size:11px;color:#a89d8a">made when you created this wedding</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div><div style="font-size:13px;font-weight:700">Emma Verhoeven</div><div style="font-size:10.5px;color:#a89d8a">bride · getting ready at her parents</div></div><span style="font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 6 30 55 81 40</span></div>
+<div style="background:#fff;border:1px solid #e7dfd0;border-radius:11px;padding:11px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px"><div><div style="font-size:13px;font-weight:700">Julian Meijer</div><div style="font-size:10.5px;color:#a89d8a">groom · reachable until 12:00</div></div><span style="font:500 11px 'JetBrains Mono',monospace;color:#6f6759">+31 6 19 72 03 66</span></div>
+</div>
+</div>
+<div style="min-width:0;display:flex;flex-direction:column;overflow:hidden">
+<div style="font:600 9.5px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#b3a78f">THEIR MUSIC · 6 OF 6 LISTS IN</div>
+<div style="margin-top:10px;flex:1;min-height:0;background:#fff;border:1px solid #e7dfd0;border-radius:13px;padding:14px 16px;display:flex;flex-direction:column;gap:1px;overflow:hidden">
+<div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f0e9da">
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Opening dance</div><div style="font-size:10.5px;color:#a89d8a;font-style:italic">Can't Help Falling in Love · Elvis Presley</div></div>
+<span style="font:400 9px 'JetBrains Mono',monospace;color:#c4bba7">1 SONG</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f0e9da">
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Second &amp; third song</div><div style="font-size:10.5px;color:#a89d8a;font-style:italic">Perfect Day · then everyone on the floor</div></div>
+<span style="font:400 9px 'JetBrains Mono',monospace;color:#c4bba7">2 SONGS</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f0e9da">
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Their top 20</div><div style="font-size:10.5px;color:#a89d8a;font-style:italic">Dreams, September, Tender, Golden…</div></div>
+<span style="font:400 9px 'JetBrains Mono',monospace;color:#c4bba7">20 SONGS</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f0e9da">
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Friends' top 20</div><div style="font-size:10.5px;color:#a89d8a;font-style:italic">Mr. Brightside, Dancing Queen, Levels…</div></div>
+<span style="font:400 9px 'JetBrains Mono',monospace;color:#c4bba7">17 SONGS</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid #f0e9da">
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">The never list</div><div style="font-size:10.5px;color:#a89d8a;font-style:italic">The Chicken Dance, Macarena</div></div>
+<span style="font:400 9px 'JetBrains Mono',monospace;color:#c4bba7">2 SONGS</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;padding:8px 2px">
+<div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">Must-plays, no matter what</div><div style="font-size:10.5px;color:#a89d8a;font-style:italic">L'Amour Toujours, Purple Rain, Free Bird</div></div>
+<span style="font:400 9px 'JetBrains Mono',monospace;color:#c4bba7">3 SONGS</span>
+</div>
+<div style="margin-top:auto;padding-top:10px;border-top:1px solid #f0e9da;display:flex;align-items:center;justify-content:space-between">
+<span style="font-size:11px;color:#a89d8a">Read only. The music stays between couple and DJ.</span>
+<span style="font-size:11.5px;color:#8a6b3c;cursor:pointer">open all lists →</span>
+</div>
+</div>
+</div>
+</main>
+<footer style="flex:none;padding:14px 40px 18px;font:400 10px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#c4bba7">PAST WEDDINGS OPEN THE SAME WAY, EVERYTHING ARCHIVED AND READABLE</footer>
+</div>
+</div>
+
+</body>
+</html>

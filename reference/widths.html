@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Width check</title>
+<style>
+  body{margin:0;background:#3a3a3a;font:12px ui-monospace,monospace;color:#ddd}
+  #stage{position:relative;overflow:hidden}
+  #frame{border:0;background:#faf8f3;transform-origin:0 0;display:block}
+  #cap{padding:4px 8px}
+</style>
+</head>
+<body>
+<div id="cap"></div>
+<div id="stage"><iframe id="frame"></iframe></div>
+<script>
+const frame = document.getElementById('frame')
+const stage = document.getElementById('stage')
+const cap = document.getElementById('cap')
+
+// Render the app at an arbitrary CSS width, scaled down so it fits this viewport.
+window.show = function (width, height, route) {
+  return new Promise((resolve) => {
+    const scale = Math.min(1, (window.innerWidth * 0.8) / width, (window.innerHeight * 0.78) / height)
+    frame.style.width = width + 'px'
+    frame.style.height = height + 'px'
+    frame.style.transform = 'scale(' + scale + ')'
+    stage.style.width = Math.round(width * scale) + 'px'
+    stage.style.height = Math.round(height * scale) + 'px'
+    cap.textContent = route + '  @  ' + width + ' x ' + height + '   (shown at ' + Math.round(scale * 100) + '%)'
+    frame.onload = () => setTimeout(() => resolve('ok'), 450)
+    frame.src = route
+  })
+}
+</script>
+</body>
+</html>

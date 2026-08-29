@@ -1,0 +1,418 @@
+/* ------------------------------------------------------------------------- *
+ * Responsive layer.
+ *
+ * Every rule outside a media query holds the mock's own value, so the screens
+ * still render exactly as designed at the 1180x740 design size. The media
+ * queries only take over above and below it.
+ *
+ *   1440px   content stops growing and centres
+ *   1120px   wedding rows reflow into a stacked middle column
+ *   1080px   the wedding detail drops its music column below the team
+ *    900px   the directory drops to one column
+ *    700px   the sidebar becomes a top bar, rows stack, padding tightens
+ *
+ * Colour tokens come from `installCssVars()` in src/theme.ts, so this file and
+ * the inline styles read from the same palette.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --rp-cap: 1440px;
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+.rp-shell,
+.rp-shell-col {
+  height: 100dvh;
+  --rp-pad-x: 34px;
+}
+.rp-shell {
+  display: flex;
+}
+.rp-shell-col {
+  display: flex;
+  flex-direction: column;
+  --rp-pad-x: 40px;
+}
+
+.rp-pane {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header, main and footer stop widening on very large screens.
+   `width: 100%` is required because the auto inline margins turn off the flex
+   stretch that would otherwise size these; border-box keeps their own padding
+   inside that width rather than adding to it. */
+.rp-cap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--rp-cap);
+  margin-inline: auto;
+}
+
+.rp-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.rp-head-center {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rp-right {
+  text-align: right;
+}
+
+/* -------------------------------------------------------------- sidebar -- */
+
+.rp-aside {
+  flex: none;
+  width: 196px;
+  border-right: 1px solid var(--rp-lineAside);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+}
+.rp-brand {
+  padding: 0 22px;
+}
+.rp-nav {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+}
+.rp-nav > a {
+  flex: none;
+  white-space: nowrap;
+}
+.rp-aside-user {
+  margin-top: auto;
+  padding: 0 22px;
+}
+
+/* ---------------------------------------------------- weddings overview -- */
+
+.rp-wrow {
+  display: grid;
+  grid-template-columns: 104px 1fr 210px 150px 90px;
+  align-items: center;
+  gap: 16px;
+}
+.rp-prow {
+  display: grid;
+  grid-template-columns: 104px 1fr 150px 90px;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ------------------------------------------------------------ directory -- */
+
+.rp-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-content: start;
+}
+.rp-search-pill {
+  width: 200px;
+}
+.rp-contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* -------------------------------------------------------- new wedding --- */
+
+.rp-form {
+  width: 100%;
+  max-width: 760px;
+}
+.rp-form-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.rp-form-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.rp-assign {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) 130px;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ------------------------------------------------------- wedding detail -- */
+
+.rp-detail {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 22px;
+}
+.rp-team {
+  display: grid;
+  grid-template-columns: 110px 1fr 140px auto;
+  align-items: center;
+  gap: 12px;
+}
+.rp-schema {
+  display: grid;
+  grid-template-columns: 90px 1fr 200px;
+  align-items: center;
+  gap: 12px;
+}
+.rp-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.rp-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.rp-share {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The detail footer tracks the team column, so the page link never runs
+   underneath the playlists. */
+.rp-detail-foot {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 22px;
+}
+
+/* ============================================ 1440px and up: stop growing */
+/* handled by .rp-cap above */
+
+/* ================================================ 1120px: rows reflow === */
+
+@media (max-width: 1120px) {
+  .rp-wrow {
+    grid-template-columns: 104px minmax(0, 1fr) 90px;
+    grid-template-areas:
+      'date couple open'
+      'date tags   open'
+      'date lists  open';
+    column-gap: 16px;
+    row-gap: 6px;
+  }
+  .rp-wrow-date {
+    grid-area: date;
+  }
+  .rp-wrow-couple {
+    grid-area: couple;
+  }
+  .rp-wrow-tags {
+    grid-area: tags;
+  }
+  .rp-wrow-lists {
+    grid-area: lists;
+  }
+  .rp-wrow-open {
+    grid-area: open;
+  }
+}
+
+/* ============================== 1080px: music moves below the team ====== */
+
+@media (max-width: 1080px) {
+  .rp-detail,
+  .rp-detail-foot {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ================================== 900px: directory to one column ====== */
+
+@media (max-width: 900px) {
+  .rp-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rp-share {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .rp-team {
+    grid-template-columns: 110px minmax(0, 1fr) auto auto;
+  }
+}
+
+/* ============================ 700px: sidebar becomes a top bar ========== */
+
+@media (max-width: 700px) {
+  .rp-shell,
+  .rp-shell-col {
+    --rp-pad-x: 20px;
+    height: auto;
+    min-height: 100dvh;
+  }
+  .rp-shell {
+    flex-direction: column;
+  }
+  .rp-pane {
+    overflow: visible;
+  }
+
+  .rp-aside {
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--rp-lineAside);
+    padding: 16px 20px;
+  }
+  .rp-brand {
+    padding: 0;
+  }
+  .rp-nav {
+    order: 3;
+    flex: 1 0 100%;
+    margin-top: 0;
+    flex-direction: row;
+    gap: 4px;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rp-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .rp-aside-user {
+    margin-top: 0;
+    margin-left: auto;
+    padding: 0;
+    text-align: right;
+  }
+
+  .rp-head,
+  .rp-head-center {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .rp-right {
+    text-align: left;
+  }
+
+  .rp-wrow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'date   open'
+      'couple couple'
+      'tags   tags'
+      'lists  lists';
+    row-gap: 8px;
+  }
+  .rp-prow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'date   open'
+      'couple couple'
+      'note   note';
+    row-gap: 6px;
+  }
+  .rp-prow-date {
+    grid-area: date;
+  }
+  .rp-prow-couple {
+    grid-area: couple;
+  }
+  .rp-prow-note {
+    grid-area: note;
+  }
+  .rp-prow-open {
+    grid-area: open;
+  }
+
+  .rp-search-pill {
+    width: auto;
+    flex: 1 1 180px;
+  }
+  .rp-contact {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+
+  .rp-form-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rp-assign {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'role act'
+      'body body';
+    row-gap: 6px;
+  }
+  .rp-assign-role {
+    grid-area: role;
+  }
+  .rp-assign-body {
+    grid-area: body;
+  }
+  .rp-assign-act {
+    grid-area: act;
+    text-align: right;
+  }
+
+  .rp-team {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'role  actions'
+      'body  body'
+      'phone phone';
+    row-gap: 4px;
+  }
+  .rp-team-role {
+    grid-area: role;
+  }
+  .rp-team-body {
+    grid-area: body;
+  }
+  .rp-team-phone {
+    grid-area: phone;
+  }
+  .rp-team-actions {
+    grid-area: actions;
+  }
+
+  .rp-schema {
+    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-areas:
+      'time what'
+      'time who';
+    row-gap: 2px;
+  }
+  .rp-schema-time {
+    grid-area: time;
+  }
+  .rp-schema-what {
+    grid-area: what;
+  }
+  .rp-schema-who {
+    grid-area: who;
+  }
+
+  .rp-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .rp-person {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+}

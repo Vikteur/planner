@@ -1,0 +1,84 @@
+/*
+ * Only what the mock's own <style> block sets, plus resets for the two places
+ * where a static label in the mock became a real form control.
+ * Deliberately no global `box-sizing: border-box`: the mock is content-box,
+ * and it opts individual elements into border-box where it needs to.
+ */
+body {
+  margin: 0;
+  background: #faf8f3;
+  font-family: 'DM Sans', Helvetica, sans-serif;
+}
+
+/* Search field in the vendor directory, drawn as a placeholder span in the mock. */
+.rp-search {
+  border: 0;
+  padding: 0;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: normal;
+  color: #2b2620;
+}
+.rp-search::placeholder {
+  color: #b3a78f;
+  opacity: 1;
+}
+
+/* Couple / date / guests fields on the new wedding screen. */
+.rp-field {
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: normal;
+  color: #2b2620;
+}
+.rp-field::placeholder {
+  font-weight: 400;
+  color: #c4bba7;
+  opacity: 1;
+}
+
+/* Vendor pickers on the new wedding screen. */
+.rp-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  outline: none;
+  padding: 0 16px 0 0;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 9 6'%3E%3Cpath d='M1 1l3.5 3.5L8 1' fill='none' stroke='%238a6b3c' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: normal;
+  color: #2b2620;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+.rp-select--empty {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #b3a78f;
+}
+.rp-select:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rp-select option {
+  color: #2b2620;
+  font-weight: 400;
+  font-size: 13px;
+}
