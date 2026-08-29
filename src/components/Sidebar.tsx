@@ -4,10 +4,10 @@ import { c, family, mono } from '../theme'
 
 const items = [
   { to: '/weddings', label: 'Weddings' },
-  { to: '/catering', label: 'Catering' },
-  { to: '/photographers', label: 'Photographers' },
-  { to: '/locations', label: 'Locations' },
-  { to: '/djs', label: 'DJs' },
+  { to: '/directory/catering', label: 'Catering' },
+  { to: '/directory/photographers', label: 'Photographers' },
+  { to: '/directory/locations', label: 'Locations' },
+  { to: '/directory/djs', label: 'DJs' },
 ]
 
 const itemBase = {

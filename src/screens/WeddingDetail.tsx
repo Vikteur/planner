@@ -3,7 +3,21 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Hov } from '../components/Hov'
 import { ContactActions } from '../components/ContactActions'
 import { c, family, mono } from '../theme'
-import { musicFootnote, weddingDetails } from '../data/weddingDetail'
+import { musicFootnote, weddingDetails, weddingTimelines } from '../data/weddingDetail'
+import { venueLine } from '../data/planner'
+import {
+  formatCeremonyLine,
+  formatDateLine,
+  formatListCount,
+  formatMusicHeading,
+  formatSummary,
+  formatTeamName,
+} from '../format'
+
+/** A role used as a stand-in owner, as the mock wrote it: "DJ open". */
+const ROLE_LABEL: Record<string, string> = {
+  VENUE: 'Venue', DJ: 'DJ', CATERING: 'Caterer', PHOTO: 'Photographer', MC: 'MC', OTHER: 'Someone',
+}
 
 const sectionLabel = { font: mono(600, '9.5px'), letterSpacing: '.2em', color: c.muteSoft } as const
 const rowLabel = { font: mono(600, '8.5px'), letterSpacing: '.14em', color: c.muteSoft } as const
@@ -20,6 +34,9 @@ export function WeddingDetail() {
   const w = id ? weddingDetails[id] : undefined
   if (!w) return <Navigate to="/weddings" replace />
 
+  const archived = w.status === 'COMPLETED'
+  const timeline = weddingTimelines[id!] ?? []
+
   return (
     <div className="rp-shell-col" style={{ background: c.shell, fontFamily: family.sans, color: c.ink }}>
       <header className="rp-head-center rp-cap" style={{ flex: 'none', padding: '20px var(--rp-pad-x) 0' }}>
@@ -32,11 +49,13 @@ export function WeddingDetail() {
           ← Your weddings
         </Hov>
         <span style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ font: mono(400, '10px'), color: c.muteFaint }}>{w.dateLine}</span>
+          <span style={{ font: mono(400, '10px'), color: c.muteFaint }}>
+            {formatDateLine(w.wedding_date, w.days_until ?? 0)}
+          </span>
           <Hov
             as="button"
             type="button"
-            onClick={() => navigate(`/weddings/${w.id}/edit`)}
+            onClick={() => navigate(`/weddings/${w.slug}/edit`)}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -78,9 +97,20 @@ export function WeddingDetail() {
               lineHeight: 1.1,
             }}
           >
-            {w.couple}
+            {w.couple_display_name}
           </div>
-          <div style={{ marginTop: 5, fontSize: 12.5, color: c.inkSoft }}>{w.summary}</div>
+          <div style={{ marginTop: 5, fontSize: 12.5, color: c.inkSoft }}>
+            {formatSummary(
+              venueLine(w.venue),
+              w.guest_count ?? null,
+              formatCeremonyLine(
+                w.ceremony_time ?? null,
+                w.first_dance_time ?? null,
+                w.music_ends_time ?? null,
+              ),
+              archived,
+            )}
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {tab === 'event' ? (
@@ -133,13 +163,20 @@ export function WeddingDetail() {
                     {m.role}
                   </span>
                   <div className="rp-team-body" style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700 }}>{m.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700 }}>
+                      {formatTeamName(m.contact_name, m.vendor_name, m.person_name)}
+                    </div>
                     <div style={{ fontSize: 10.5, color: c.mute }}>{m.note}</div>
                   </div>
                   <span className="rp-team-phone rp-right" style={phone}>
                     {m.phone}
                   </span>
-                  <ContactActions className="rp-team-actions" name={m.name} email={m.email} phone={m.phone} />
+                  <ContactActions
+                    className="rp-team-actions"
+                    name={formatTeamName(m.contact_name, m.vendor_name, m.person_name)}
+                    email={m.email ?? ''}
+                    phone={m.phone ?? ''}
+                  />
                 </div>
               ))}
             </div>
@@ -149,7 +186,7 @@ export function WeddingDetail() {
             <div className="rp-pair">
               {w.people.map((p) => (
                 <div
-                  key={p.name}
+                  key={p.id}
                   className="rp-person"
                   style={{
                     background: c.white,
@@ -159,12 +196,18 @@ export function WeddingDetail() {
                   }}
                 >
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700 }}>{p.name}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700 }}>
+                      {[p.given_name, p.family_name].filter(Boolean).join(' ')}
+                    </div>
                     <div style={{ fontSize: 10.5, color: c.mute }}>{p.note}</div>
                   </div>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 'none' }}>
                     <span style={phone}>{p.phone}</span>
-                    <ContactActions name={p.name} email={p.email} phone={p.phone} />
+                    <ContactActions
+                      name={[p.given_name, p.family_name].filter(Boolean).join(' ')}
+                      email={p.email ?? ''}
+                      phone={p.phone ?? ''}
+                    />
                   </span>
                 </div>
               ))}
@@ -172,7 +215,9 @@ export function WeddingDetail() {
           </div>
 
           <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={sectionLabel}>{w.musicHeading}</div>
+            <div style={sectionLabel}>
+              {formatMusicHeading(w.music.lists_in, w.music.lists_total, archived)}
+            </div>
             <div
               style={{
                 marginTop: 10,
@@ -188,22 +233,28 @@ export function WeddingDetail() {
                 overflow: 'auto',
               }}
             >
-              {w.playlists.map((p, i) => (
+              {w.song_lists.map((p, i) => (
                 <div
-                  key={p.title}
+                  key={p.kind}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 10,
                     padding: '8px 2px',
-                    ...(i < w.playlists.length - 1 ? { borderBottom: `1px solid ${c.lineSoft}` } : null),
+                    ...(i < w.song_lists.length - 1 ? { borderBottom: `1px solid ${c.lineSoft}` } : null),
                   }}
                 >
+                  {/*
+                    No preview of song titles here, deliberately. The footnote
+                    under this list has always said the music stays between the
+                    couple and their DJ; the API has no field to put one in.
+                  */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12.5, fontWeight: 700 }}>{p.title}</div>
-                    <div style={{ fontSize: 10.5, color: c.mute, fontStyle: 'italic' }}>{p.preview}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700 }}>{p.label}</div>
                   </div>
-                  <span style={{ font: mono(400, '9px'), color: c.muteFaint }}>{p.count}</span>
+                  <span style={{ font: mono(400, '9px'), color: c.muteFaint }}>
+                    {formatListCount(p.state, p.song_count)}
+                  </span>
                 </div>
               ))}
               <div
@@ -233,9 +284,9 @@ export function WeddingDetail() {
         <main className="rp-cap" style={{ flex: 1, minHeight: 0, padding: '16px var(--rp-pad-x) 0', overflow: 'auto' }}>
           <div style={sectionLabel}>SCHEMA OF THE DAY</div>
           <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {w.schema.map((s) => (
+            {timeline.map((s) => (
               <div
-                key={s.time}
+                key={s.id}
                 className="rp-schema"
                 style={{
                   background: c.white,
@@ -245,13 +296,14 @@ export function WeddingDetail() {
                 }}
               >
                 <span className="rp-schema-time" style={{ font: mono(500, '12px'), color: c.goldDeep }}>
-                  {s.time}
+                  {s.at_time}
                 </span>
                 <span className="rp-schema-what" style={{ fontSize: 13, fontWeight: 600 }}>
                   {s.what}
                 </span>
                 <span className="rp-schema-who rp-right" style={{ fontSize: 11, color: c.mute }}>
-                  {s.who}
+                  {s.owner_label ??
+                    (s.owner_role ? `${ROLE_LABEL[s.owner_role] ?? s.owner_role} open` : '')}
                 </span>
               </div>
             ))}
@@ -281,11 +333,11 @@ export function WeddingDetail() {
               whiteSpace: 'nowrap',
             }}
           >
-            {w.shareUrl}
+            {w.portal?.url ?? ''}
           </span>
           <span
             onClick={() => {
-              void navigator.clipboard?.writeText(`https://${w.shareUrl}`)
+              void navigator.clipboard?.writeText(`https://${w.portal?.url ?? ''}`)
               setCopied(true)
               window.setTimeout(() => setCopied(false), 1600)
             }}

@@ -2,13 +2,26 @@ import { useNavigate } from 'react-router-dom'
 import { Sidebar } from '../components/Sidebar'
 import { Hov } from '../components/Hov'
 import { c, family, mono } from '../theme'
-import { overviewFooter, overviewSubtitle, past, upcoming } from '../data/planner'
-import type { Tag } from '../data/planner'
+import { overviewCounts, overviewSubtitle, past, upcoming, venueLine } from '../data/planner'
+import type { WeddingSummary } from '../data/planner'
+import {
+  formatCountdown,
+  formatDateShort,
+  formatOverviewFooter,
+  formatPlaylistsLine,
+} from '../format'
+
+type TeamPill = NonNullable<WeddingSummary['roles']>[number]
 
 const label = { font: mono(600, '9.5px'), letterSpacing: '.2em' } as const
 
-function TagPill({ tag }: { tag: Tag }) {
-  return tag.confirmed ? (
+/**
+ * A role slot as a pill. Confirmed reads as settled; anything else reads as
+ * still open, which is the distinction the planner scans this list for.
+ */
+function TagPill({ tag }: { tag: TeamPill }) {
+  const label = tag.label ?? tag.role
+  return tag.state === 'CONFIRMED' ? (
     <span
       style={{
         borderRadius: 999,
@@ -19,7 +32,7 @@ function TagPill({ tag }: { tag: Tag }) {
         fontWeight: 600,
       }}
     >
-      {tag.label} ✓
+      {label} ✓
     </span>
   ) : (
     <span
@@ -32,7 +45,7 @@ function TagPill({ tag }: { tag: Tag }) {
         fontWeight: 600,
       }}
     >
-      {tag.label}?
+      {label}?
     </span>
   )
 }
@@ -91,7 +104,7 @@ export function WeddingsOverview() {
               <Hov
                 key={w.id}
                 className="rp-wrow"
-                onClick={() => navigate(`/weddings/${w.id}`)}
+                onClick={() => navigate(`/weddings/${w.slug}`)}
                 style={{
                   background: c.white,
                   border: `1px solid ${c.line}`,
@@ -102,24 +115,28 @@ export function WeddingsOverview() {
                 hover={{ borderColor: c.lineHover }}
               >
                 <div className="rp-wrow-date">
-                  <div style={{ font: mono(500, '12px'), color: c.goldDeep }}>{w.date}</div>
-                  <div style={{ marginTop: 2, font: mono(400, '9.5px'), color: c.muteFaint }}>{w.countdown}</div>
+                  <div style={{ font: mono(500, '12px'), color: c.goldDeep }}>
+                    {formatDateShort(w.wedding_date)}
+                  </div>
+                  <div style={{ marginTop: 2, font: mono(400, '9.5px'), color: c.muteFaint }}>
+                    {formatCountdown(w.days_until ?? 0)}
+                  </div>
                 </div>
                 <div className="rp-wrow-couple">
                   <div style={{ fontFamily: family.serif, fontStyle: 'italic', fontSize: 19, fontWeight: 600 }}>
-                    {w.couple}
+                    {w.couple_display_name}
                   </div>
                   <div style={{ marginTop: 2, fontSize: 11.5, color: c.mute }}>
-                    {w.venue} · {w.guests} guests
+                    {venueLine(w.venue)} · {w.guest_count} guests
                   </div>
                 </div>
                 <div className="rp-wrow-tags" style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                  {w.tags.map((t) => (
-                    <TagPill key={t.label} tag={t} />
+                  {(w.roles ?? []).map((t) => (
+                    <TagPill key={t.role} tag={t} />
                   ))}
                 </div>
                 <div className="rp-wrow-lists" style={{ fontSize: 11.5, color: c.inkSoft }}>
-                  {w.playlists}
+                  {formatPlaylistsLine(w.music.lists_in, w.music.lists_total)}
                 </div>
                 <span className="rp-wrow-open rp-right" style={{ fontSize: 11.5, color: c.goldDeep }}>
                   open →
@@ -134,7 +151,7 @@ export function WeddingsOverview() {
               <Hov
                 key={w.id}
                 className="rp-prow"
-                onClick={() => navigate(`/weddings/${w.id}`)}
+                onClick={() => navigate(`/weddings/${w.slug}`)}
                 style={{
                   border: `1px solid ${c.lineSoft}`,
                   borderRadius: 12,
@@ -145,13 +162,15 @@ export function WeddingsOverview() {
                 hover={{ opacity: 1 }}
               >
                 <span className="rp-prow-date" style={{ font: mono(500, '11.5px'), color: c.muteSoft }}>
-                  {w.date}
+                  {formatDateShort(w.wedding_date)}
                 </span>
                 <div className="rp-prow-couple">
                   <span style={{ fontFamily: family.serif, fontStyle: 'italic', fontSize: 16, fontWeight: 600 }}>
-                    {w.couple}
+                    {w.couple_display_name}
                   </span>
-                  <span style={{ marginLeft: 10, fontSize: 11, color: c.mute }}>{w.venue}</span>
+                  <span style={{ marginLeft: 10, fontSize: 11, color: c.mute }}>
+                    {venueLine(w.venue)}
+                  </span>
                 </div>
                 <span className="rp-prow-note" style={{ fontSize: 11, color: c.mute }}>
                   {w.note}
@@ -174,7 +193,7 @@ export function WeddingsOverview() {
             color: c.muteFaint,
           }}
         >
-          {overviewFooter}
+          {formatOverviewFooter(overviewCounts.plannedThisYear, overviewCounts.needAVendor)}
         </footer>
       </div>
     </div>

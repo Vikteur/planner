@@ -69,7 +69,7 @@ export function VendorDirectory() {
     )
   }, [section, query])
 
-  if (!section) return <Navigate to="/catering" replace />
+  if (!section) return <Navigate to="/directory/catering" replace />
 
   return (
     <div className="rp-shell" style={{ background: c.shell, fontFamily: family.sans, color: c.ink }}>

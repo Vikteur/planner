@@ -5,6 +5,7 @@ import { c, family, mono } from '../theme'
 import { tabFor } from '../data/directory'
 import type { Vendor } from '../data/directory'
 import { weddingDetails } from '../data/weddingDetail'
+import { formatDateLong } from '../format'
 
 const fieldLabel = { font: mono(600, '8.5px'), letterSpacing: '.16em', color: c.muteSoft } as const
 const rowLabel = { font: mono(600, '9px'), letterSpacing: '.14em', color: c.muteSoft } as const
@@ -88,14 +89,6 @@ function detailLine(vendor: Vendor) {
   return lead.name === vendor.name ? `${summary} · ${lead.phone}` : `${summary} · ${lead.name}, ${lead.phone}`
 }
 
-/** A team member is stored by person, so match back to the vendor they belong to. */
-function vendorIdFor(tab: string, teamName: string) {
-  const hit = tabFor(tab).vendors.find(
-    (v) => teamName.includes(v.name) || v.contacts.some((p) => teamName.includes(p.name)),
-  )
-  return hit?.id ?? ''
-}
-
 function AssignRow({ slot, value, onChange }: { slot: Slot; value: string; onChange: (v: string) => void }) {
   const section = tabFor(slot.tab)
   const vendor = section.vendors.find((v) => v.id === value)
@@ -147,21 +140,27 @@ export function NewWedding() {
   const { id } = useParams()
   const editing = id ? weddingDetails[id] : undefined
 
-  const [couple, setCouple] = useState(editing ? editing.couple : 'Lisa & Tom')
-  const [date, setDate] = useState(editing ? editing.dateLine.split(' · ')[0] : '')
-  const [guests, setGuests] = useState(editing ? (editing.summary.match(/(\d+) guests/)?.[1] ?? '') : '150')
+  const [couple, setCouple] = useState(editing ? editing.couple_display_name : 'Lisa & Tom')
+  const [date, setDate] = useState(editing ? formatDateLong(editing.wedding_date) : '')
+  const [guests, setGuests] = useState(editing ? String(editing.guest_count ?? '') : '150')
   const [dateFocused, setDateFocused] = useState(!editing)
   const [assigned, setAssigned] = useState<Record<string, string>>(() =>
     Object.fromEntries(
       slots.map((s) => {
         if (!editing) return [s.tab, s.initial]
         const member = editing.team.find((m) => m.role === s.role)
-        return [s.tab, member ? vendorIdFor(s.tab, member.name) : '']
+        if (!member) return [s.tab, '']
+        // The slot carries the vendor it was assigned to. This used to guess,
+        // by checking whether the team member's name contained a vendor's name
+        // — which quietly picked the wrong vendor whenever two of them shared a
+        // contact, and picked none whenever a name was written differently.
+        if (member.state === 'NOT_NEEDED') return [s.tab, NOT_NEEDED]
+        return [s.tab, member.vendor_id ?? '']
       }),
     ),
   )
 
-  const done = () => navigate(editing ? `/weddings/${editing.id}` : '/weddings')
+  const done = () => navigate(editing ? `/weddings/${editing.slug}` : '/weddings')
 
   return (
     <div className="rp-shell-col" style={{ background: c.shell, fontFamily: family.sans, color: c.ink }}>
@@ -172,7 +171,7 @@ export function NewWedding() {
           style={{ fontSize: 12, color: c.mute, cursor: 'pointer' }}
           hover={{ color: c.inkSoft }}
         >
-          {editing ? `← Back to ${editing.couple}` : '← Back to your weddings'}
+          {editing ? `← Back to ${editing.couple_display_name}` : '← Back to your weddings'}
         </Hov>
         <span style={{ font: mono(400, '10px'), color: c.muteFaint }}>draft saved ✓</span>
       </header>
