@@ -5,7 +5,19 @@ import react from '@vitejs/plugin-react'
 // at a throwaway instance with its own database.
 const apiTarget = process.env.API_URL ?? `http://127.0.0.1:${process.env.API_PORT ?? '8080'}`
 
+/*
+  The planner is served under /planner/ in production: the DJ app owns / on the
+  same hostname and the couple's intake owns /guest/ and /g/.
+
+  Set here rather than only in nginx so the dev server uses the same base. A dev
+  build that lives at / and a production one that lives at /planner/ differ in
+  exactly the way that is invisible until deploy - asset URLs and router paths -
+  and this is the cheapest way to never find that out on the box.
+*/
+const BASE = '/planner/'
+
 export default defineConfig({
+  base: BASE,
   plugins: [react()],
   server: {
     port: 5175,

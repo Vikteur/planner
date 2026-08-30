@@ -32,7 +32,8 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+      {/* Matches vite's base, so every route is relative to /planner/. */}
+      <BrowserRouter basename="/planner">
         <AuthProvider>
           <App />
         </AuthProvider>
