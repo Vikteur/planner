@@ -4,9 +4,9 @@ import { Hov } from '../components/Hov'
 import { c, family, mono } from '../theme'
 import { tabFor } from '../data/directoryTabs'
 import type { Vendor } from '../api/client'
-import { useVendors, useWedding } from '../data/queries'
+import { useAssignRole, useCreateWedding, useUpdateWedding, useVendors, useWedding } from '../data/queries'
 import type { Wedding } from '../api/client'
-import { formatDateLong } from '../format'
+import { formatDateLong, parseDateInput } from '../format'
 
 const fieldLabel = { font: mono(600, '8.5px'), letterSpacing: '.16em', color: c.muteSoft } as const
 const rowLabel = { font: mono(600, '9px'), letterSpacing: '.14em', color: c.muteSoft } as const
@@ -43,7 +43,8 @@ const rowOpen = {
 /** '' is still open, 'none' is not needed, anything else is a vendor id. */
 const NOT_NEEDED = 'none'
 
-type Slot = { tab: string; label: string; role: string; prompt: string; initial: string }
+type Slot = { tab: string; label: string; role: string; prompt: string }
+
 
 const slots: Slot[] = [
   {
@@ -51,28 +52,24 @@ const slots: Slot[] = [
     label: 'LOCATION',
     role: 'VENUE',
     prompt: 'Choose from your venues, or leave open for now…',
-    initial: 'strandpaviljoen-zuid',
   },
   {
     tab: 'photographers',
     label: 'PHOTOGRAPHER',
     role: 'PHOTO',
     prompt: 'Choose from your photographers, or leave open for now…',
-    initial: 'merel-jansen',
   },
   {
     tab: 'djs',
     label: 'DJ',
     role: 'DJ',
     prompt: 'Choose from your DJs, or leave open for now…',
-    initial: '',
   },
   {
     tab: 'catering',
     label: 'CATERING',
     role: 'CATERING',
     prompt: 'Choose from your eight caterers, or leave open for now…',
-    initial: '',
   },
 ]
 
@@ -189,7 +186,10 @@ function WeddingForm({ editing }: { editing: Wedding | undefined }) {
   const [assigned, setAssigned] = useState<Record<string, string>>(() =>
     Object.fromEntries(
       slots.map((s) => {
-        if (!editing) return [s.tab, s.initial]
+        // A new wedding starts with nothing assigned. These used to be
+        // pre-filled with two vendors from the design mock, whose ids stopped
+        // existing when the directory became real data.
+        if (!editing) return [s.tab, '']
         const member = editing.team.find((m) => m.role === s.role)
         if (!member) return [s.tab, '']
         // The slot carries the vendor it was assigned to. This used to guess,
@@ -202,7 +202,101 @@ function WeddingForm({ editing }: { editing: Wedding | undefined }) {
     ),
   )
 
-  const done = () => navigate(editing ? `/weddings/${editing.slug}` : '/weddings')
+  const done = () => navigate(editing ? `/weddings/${editing.id}` : '/weddings')
+
+  const createWedding = useCreateWedding()
+  const updateWedding = useUpdateWedding(editing?.id ?? '')
+  const assignRole = useAssignRole()
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+
+  /**
+   * "Emma & Julian" into two people.
+   *
+   * The couple types one line because that is how they say it, but the access
+   * code is built from both partners' initials, so the two names have to be
+   * separable. An ampersand or the word "and" covers what people actually
+   * write; anything else is stored as one partner and the planner can split it
+   * on the detail screen rather than being blocked here.
+   */
+  function partnersFrom(display: string) {
+    const halves = display.split(/\s+(?:&|and|\+)\s+/i).map((half) => half.trim())
+    return halves
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((half, index) => ({
+        kind: 'PARTNER' as const,
+        given_name: half.split(/\s+/)[0],
+        family_name: half.split(/\s+/).slice(1).join(' ') || null,
+        sort_order: index + 1,
+      }))
+  }
+
+  /**
+   * Save, then assign whatever the selects say.
+   *
+   * The team is written after the wedding exists because each slot is its own
+   * PUT — the contract models a role as a slot that is replaced, not as a field
+   * on the wedding. A slot that fails does not lose the wedding.
+   */
+  async function save() {
+    if (saving) return
+    setSaving(true)
+    setSaveError(null)
+    try {
+      const isoDate = parseDateInput(date)
+      if (!isoDate) {
+        setSaveError('That date is not one we can read. Try 14 / 06 / 2027.')
+        setSaving(false)
+        return
+      }
+      const input = {
+        couple_display_name: couple.trim(),
+        wedding_date: isoDate,
+        guest_count: guests.trim() ? Number(guests) : null,
+        partners: partnersFrom(couple),
+      }
+      const saved = editing
+        ? await updateWedding.mutateAsync(input)
+        : await createWedding.mutateAsync(input)
+
+      /*
+        The wedding exists from here on, so a failing role must not read as a
+        failed save. Assignments are collected and reported on the wedding
+        itself rather than throwing the whole thing away — the alternative is
+        an error screen next to a wedding that was, in fact, created.
+      */
+      const refused: string[] = []
+      for (const slot of slots) {
+        const value = assigned[slot.tab]
+        if (!value) continue
+        try {
+          await assignRole.mutateAsync({
+            weddingId: saved.id,
+            role: slot.role,
+            input:
+              value === NOT_NEEDED
+                ? { state: 'NOT_NEEDED' }
+                : { state: 'PENCILLED', vendor_id: value },
+          })
+        } catch {
+          refused.push(slot.label)
+        }
+      }
+      if (refused.length > 0) {
+        setSaveError(
+          `Saved, but could not assign: ${refused.join(', ')}. ` +
+            'Open the wedding and set those again.',
+        )
+        setSaving(false)
+        return
+      }
+      navigate(`/weddings/${saved.id}`)
+    } catch (caught) {
+      setSaveError(caught instanceof Error ? caught.message : 'Could not save this wedding.')
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="rp-shell-col" style={{ background: c.shell, fontFamily: family.sans, color: c.ink }}>
@@ -298,11 +392,21 @@ function WeddingForm({ editing }: { editing: Wedding | undefined }) {
             ))}
           </div>
 
+          {saveError && (
+            <div
+              role="alert"
+              style={{ marginTop: 14, fontSize: 12.5, color: '#8a3c3c' }}
+            >
+              {saveError}
+            </div>
+          )}
+
           <div style={{ marginTop: 18, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
             <Hov
               as="button"
               type="button"
-              onClick={done}
+              onClick={() => void save()}
+              disabled={saving || !couple.trim() || !date.trim()}
               style={{
                 border: 0,
                 borderRadius: 999,
@@ -316,7 +420,7 @@ function WeddingForm({ editing }: { editing: Wedding | undefined }) {
               }}
               hover={{ background: c.inkHover }}
             >
-              {editing ? 'Save changes' : 'Create wedding'}
+              {saving ? 'Saving…' : editing ? 'Save changes' : 'Create wedding'}
             </Hov>
             <Hov
               as="button"

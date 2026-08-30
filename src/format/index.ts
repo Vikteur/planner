@@ -186,3 +186,44 @@ export function venueLine(venue: { name: string; place?: string | null } | null 
   if (!venue) return ''
   return venue.place ? venue.name + ', ' + venue.place : venue.name
 }
+
+/**
+ * The date field, back into an ISO date. `null` when it is not a date yet.
+ *
+ * The field's placeholder promises `DD / MM / YYYY` and it is day-first
+ * everywhere this product is used, so 06/07/2027 is July, never June. It also
+ * accepts what `formatDateLong` produces, because the edit screen fills the
+ * field with exactly that and re-saving must not corrupt the date.
+ *
+ * Deliberately not `new Date(text)`: that parses 06/07/2027 as the sixth of
+ * July in an American locale and silently moves a wedding by a month.
+ */
+export function parseDateInput(text: string): string | null {
+  const clean = (text ?? '').trim()
+  if (!clean) return null
+
+  const iso = clean.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (iso) return valid(+iso[1], +iso[2], +iso[3])
+
+  const numeric = clean.match(/^(\d{1,2})\s*[\/.\- ]\s*(\d{1,2})\s*[\/.\- ]\s*(\d{4})$/)
+  if (numeric) return valid(+numeric[3], +numeric[2], +numeric[1])
+
+  const named = clean.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/)
+  if (named) {
+    // The typed word has to be a prefix of the month, not merely share its
+    // first three letters — otherwise "Junetime" is accepted as June.
+    const word = named[2].toUpperCase()
+    const month = MONTHS.findIndex((name) => word.length >= 3 && name.startsWith(word))
+    if (month >= 0) return valid(+named[3], month + 1, +named[1])
+  }
+  return null
+}
+
+/** Rejects the 31st of February rather than rolling it into March. */
+function valid(year: number, month: number, day: number): string | null {
+  if (month < 1 || month > 12 || day < 1) return null
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate()
+  if (day > daysInMonth) return null
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${year}-${pad(month)}-${pad(day)}`
+}

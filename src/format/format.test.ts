@@ -12,6 +12,7 @@ import {
   formatSongCount,
   formatSummary,
   formatTeamName,
+  parseDateInput,
 } from './index'
 import { overviewCounts, past, upcoming, venueLine } from '../test/mockData.planner'
 import { weddingDetails } from '../test/mockData.weddingDetail'
@@ -212,5 +213,42 @@ describe('the cases the mock never showed', () => {
 
   it('gets its singulars right', () => {
     expect(formatOverviewFooter(1, 1)).toBe('1 WEDDING PLANNED THIS YEAR · 1 NEEDS A VENDOR')
+  })
+})
+
+describe('reading the date field back', () => {
+  it('is day-first, because that is what the placeholder promises', () => {
+    // 06/07/2027 is July here and June in an American locale, which is exactly
+    // why this does not go through new Date().
+    expect(parseDateInput('06/07/2027')).toBe('2027-07-06')
+    expect(parseDateInput('6/7/2027')).toBe('2027-07-06')
+    expect(parseDateInput('14 / 06 / 2027')).toBe('2027-06-14')
+    expect(parseDateInput('14-06-2027')).toBe('2027-06-14')
+    expect(parseDateInput('14.06.2027')).toBe('2027-06-14')
+  })
+
+  it('reads back what the edit screen puts in the field', () => {
+    // The edit form fills this with formatDateLong, so re-saving an unchanged
+    // wedding must not move its date.
+    const iso = '2027-06-14'
+    expect(parseDateInput(formatDateLong(iso))).toBe(iso)
+    expect(parseDateInput('2 MAY 2026')).toBe('2026-05-02')
+    expect(parseDateInput(iso)).toBe(iso)
+  })
+
+  it('refuses a date that does not exist rather than rolling it forward', () => {
+    // new Date(2027, 1, 31) is the 3rd of March. A wedding on a day that does
+    // not exist is a typo, and moving it silently is the worst answer.
+    expect(parseDateInput('31/02/2027')).toBeNull()
+    expect(parseDateInput('31/04/2027')).toBeNull()
+    expect(parseDateInput('29/02/2028')).toBe('2028-02-29')
+    expect(parseDateInput('29/02/2027')).toBeNull()
+  })
+
+  it('returns null for anything it cannot read, rather than guessing', () => {
+    expect(parseDateInput('')).toBeNull()
+    expect(parseDateInput('next summer')).toBeNull()
+    expect(parseDateInput('14/06/27')).toBeNull()
+    expect(parseDateInput('14 Junetime 2027')).toBeNull()
   })
 })

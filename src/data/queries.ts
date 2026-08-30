@@ -78,12 +78,27 @@ export function useUpdateWedding(id: string) {
   })
 }
 
-export function useAssignRole(weddingId: string) {
+/**
+ * Assign one role on one wedding.
+ *
+ * The wedding id is a call argument, not a hook argument, because the create
+ * form assigns roles to a wedding that did not exist when the component
+ * rendered. Captured at render time it was the empty string, and every
+ * assignment went to `/api/weddings//team/VENUE`.
+ */
+export function useAssignRole() {
   const client = useQueryClient()
   return useMutation({
-    mutationFn: ({ role, input }: { role: string; input: TeamSlotInput }) =>
-      api.assignRole(weddingId, role, input),
-    onSuccess: () => {
+    mutationFn: ({
+      weddingId,
+      role,
+      input,
+    }: {
+      weddingId: string
+      role: string
+      input: TeamSlotInput
+    }) => api.assignRole(weddingId, role, input),
+    onSuccess: (_data, { weddingId }) => {
       // The wedding for the detail screen, and the list for the pills on the
       // overview row — both are now wrong.
       void client.invalidateQueries({ queryKey: keys.wedding(weddingId) })

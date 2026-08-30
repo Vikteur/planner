@@ -81,7 +81,7 @@ export function WeddingDetail() {
           <Hov
             as="button"
             type="button"
-            onClick={() => navigate(`/weddings/${w.slug}/edit`)}
+            onClick={() => navigate(`/weddings/${w.id}/edit`)}
             style={{
               display: 'inline-flex',
               alignItems: 'center',

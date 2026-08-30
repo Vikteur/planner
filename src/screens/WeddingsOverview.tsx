@@ -133,7 +133,7 @@ export function WeddingsOverview() {
               <Hov
                 key={w.id}
                 className="rp-wrow"
-                onClick={() => navigate(`/weddings/${w.slug}`)}
+                onClick={() => navigate(`/weddings/${w.id}`)}
                 style={{
                   background: c.white,
                   border: `1px solid ${c.line}`,
@@ -180,7 +180,7 @@ export function WeddingsOverview() {
               <Hov
                 key={w.id}
                 className="rp-prow"
-                onClick={() => navigate(`/weddings/${w.slug}`)}
+                onClick={() => navigate(`/weddings/${w.id}`)}
                 style={{
                   border: `1px solid ${c.lineSoft}`,
                   borderRadius: 12,
